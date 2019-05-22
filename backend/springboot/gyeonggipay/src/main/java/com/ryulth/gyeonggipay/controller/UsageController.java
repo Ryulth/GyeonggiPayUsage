@@ -16,8 +16,16 @@ public class UsageController {
     public UsageController(UsageService usageService){
         this.usageService = usageService;
     }
+    @GetMapping("/usages")
+    public String getUsages() throws IOException {
+        return usageService.findAll();
+    }
     @GetMapping("/usage")
     public String getUsage(@RequestParam(value = "address")String address) throws IOException {
         return usageService.findUsage(address);
+    }
+    @GetMapping("/usage/search")
+    public String searchUsage(@RequestParam(value = "address")String address) throws IOException {
+        return usageService.searchByAddress(address);
     }
 }

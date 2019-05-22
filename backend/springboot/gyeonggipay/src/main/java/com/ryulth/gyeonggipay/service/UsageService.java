@@ -8,6 +8,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -30,17 +31,26 @@ public class UsageService {
         this.restHighLevelClient = restHighLevelClient;
         this.objectMapper = objectMapper;
     }
-
+    public String searchByAddress(String address) throws IOException {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.termQuery("address",address));
+        SearchRequest searchRequest = new SearchRequest("gyeonggipay").types("usage").source(searchSourceBuilder);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+        return getSearchResult(searchResponse).toString();
+    }
 
     public String findUsage(String address) throws IOException {
-//        GetRequest getRequest = new GetRequest("gyeonggipay", "usage", address);
-//
-//        GetResponse getResponse = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
-//        Map<String, Object> resultMap = getResponse.getSource();
-//        System.out.println(resultMap);
-//        return objectMapper
-//                .convertValue(resultMap, Usage.class)
-//                .toString();
+        GetRequest getRequest = new GetRequest("gyeonggipay", "usage", address);
+
+        GetResponse getResponse = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
+        Map<String, Object> resultMap = getResponse.getSource();
+        System.out.println(resultMap);
+        return objectMapper
+                .convertValue(resultMap, Usage.class)
+                .toString();
+
+    }
+    public String findAll() throws IOException {
         SearchRequest searchRequest = new SearchRequest();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
